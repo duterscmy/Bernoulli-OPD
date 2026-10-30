@@ -1,0 +1,14 @@
+# Platform-specific packages (PyTorch, SGLang, Megatron-LM, Transformer Engine,
+# Apex, CUDA, cuDNN, and NCCL) are documented in docs/ENVIRONMENT.md.
+accelerate==1.15.0
+datasets==5.0.1
+einops==0.8.2
+huggingface-hub==1.32.0
+numpy==1.26.4
+omegaconf==2.3.1
+PyYAML==6.0.3
+ray[default]==2.58.0
+safetensors==0.8.0
+tokenizers==0.22.2
+transformers==5.12.1
+wandb==0.30.0

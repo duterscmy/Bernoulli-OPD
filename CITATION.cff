@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the accompanying paper."
+title: "Bernoulli On-Policy Distillation: Don't Ignore High-Confidence Student Tokens"
+type: software
+authors:
+  - family-names: Cao
+    given-names: Mingyu
+  - family-names: Jin
+    given-names: Yaokai
+  - family-names: Liu
+    given-names: Shiwei
+  - family-names: Yin
+    given-names: Lu
+    email: l.yin@surrey.ac.uk
+license: Apache-2.0
+version: 1.0.0
+date-released: 2026-10-30
