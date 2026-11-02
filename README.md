@@ -2,9 +2,11 @@
 
 Official research code for **“Bernoulli On-Policy Distillation: Don’t Ignore High-Confidence Student Tokens.”**
 
-Mingyu Cao<sup>1</sup>, Yaokai Jin<sup>2</sup>, Shiwei Liu<sup>3,4,5</sup>, Lu Yin<sup>1</sup>  
+
+[Mingyu Cao](https://duterscmy.github.io/)<sup>1</sup>, Yaokai Jin<sup>2</sup>, [Shiwei Liu](https://shiweiliuiiiiiii.github.io/)<sup>3,4,5</sup>, [Lu Yin](https://luuyin.com/)<sup>1,*</sup>  
 <sup>1</sup>University of Surrey · <sup>2</sup>University College London · <sup>3</sup>ELLIS Institute Tübingen · <sup>4</sup>Max Planck Institute for Intelligent Systems · <sup>5</sup>Tübingen AI Center  
-Correspondence: [Lu Yin](mailto:l.yin@surrey.ac.uk)
+<sup>*</sup>Corresponding author: [Lu Yin](mailto:l.yin@surrey.ac.uk)
+
 
 ![Figure 1: token distribution and gradient allocation](assets/figure1.png)
 
@@ -21,10 +23,8 @@ the direct probability-gap signal `p_S - p_T`.
 - Reproducible launch configurations for all four teacher–student settings.
 - One training entry point and one evaluation entry point.
 - AIME24 Avg@8 checkpoint selection by default.
-- Final evaluation defaults matching the experiments: maximum length 32168 and @32 for competition benchmarks, except Qwen3-8B-DAPO-RL (38912 and @16); MATH500 is always @4.
-- CPU-level objective and integration tests in `tests/`.
+- Final evaluation defaults matching the experiments: Avg@32 for competition benchmarks, MATH500 is always Avg@4.
 
-The repository contains no model weights, datasets, training logs, or generated responses.
 
 ## Experimental settings
 
@@ -126,10 +126,6 @@ Equivalent setting-specific launchers are under `scripts/settings/`, for example
 `./scripts/settings/run-qwen3-4b.sh bernoulli`. These four small launchers make each paper
 setting explicit while sharing the same audited training implementation.
 
-The unified defaults are 200 optimizer updates, one response per prompt, training length 12000,
-temperature 1.0, global batch size 64, Adam, constant `1e-6` learning rate, no warmup, and
-gradient clipping at 1.0. AIME24 Avg@8 validation runs every 20 updates. Checkpoints omit
-optimizer state and the retention helper keeps the best validation checkpoint and the last one.
 
 Override a value with an environment variable, for example:
 
