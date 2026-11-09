@@ -28,11 +28,9 @@ Yaokai Jin<sup>2</sup>,
 [![release sanity](https://github.com/duterscmy/Bernoulli-OPD/actions/workflows/ci.yml/badge.svg)](https://github.com/duterscmy/Bernoulli-OPD/actions/workflows/ci.yml)
 [![version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/duterscmy/Bernoulli-OPD)
 
-This repository is the reference implementation for
-[arXiv:2611.02093](https://arxiv.org/abs/2611.02093). It is maintained as a Slime source fork with
-a focused paper-reproduction layer: generic upstream launchers are pruned while the framework
-source remains available. The upstream baseline, project-specific surface, and synchronization
-policy are documented in [PROVENANCE.md](PROVENANCE.md).
+This repository is the official implementation of **Bernoulli On-Policy Distillation (BOPD)**,
+introduced in [arXiv:2611.02093](https://arxiv.org/abs/2611.02093). It provides the training,
+evaluation, and reproducibility code for BOPD and the comparison methods reported in the paper.
 
 
 ![Figure 1: token distribution and gradient allocation](assets/figure1.png)
