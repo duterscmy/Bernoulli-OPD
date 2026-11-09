@@ -27,7 +27,7 @@ run_suite() {
   local suite="$1"
   local samples="$2"
   RUN_ID="$RUN_STEM" EVAL_SUITE="$suite" N_SAMPLES_PER_EVAL_PROMPT="$samples" \
-    "$ROOT/examples/opsa/eval-qwen3-1.7B-best-checkpoint.sh"
+    "$ROOT/examples/bopd/eval-qwen3-1.7B-best-checkpoint.sh"
 }
 
 if [[ "$MODE" == validation ]]; then

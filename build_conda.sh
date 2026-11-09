@@ -3,7 +3,7 @@
 set -ex
 
 export SLIME_DIR="${SLIME_DIR:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)}"
-export CONDA_ENV_NAME="${CONDA_ENV_NAME:-opsa-slime}"
+export CONDA_ENV_NAME="${CONDA_ENV_NAME:-bopd-slime}"
 
 # create conda
 yes '' | "${SHELL}" <(curl -L micro.mamba.pm/install.sh)

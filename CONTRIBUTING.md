@@ -34,7 +34,7 @@ Run the checks that are appropriate for the change:
 ```bash
 git diff --check
 bash -n build_conda.sh
-find scripts examples/opsa -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
+find scripts examples/bopd -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
 python -m compileall -q setup.py scripts/download_data.py \
   slime/backends/megatron_utils/opd.py slime/rollout/on_policy_distillation.py
 ```

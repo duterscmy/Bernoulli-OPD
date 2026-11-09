@@ -36,7 +36,7 @@ export EVAL_INTERVAL="${EVAL_INTERVAL:-20}"
 export SAVE_INTERVAL="${SAVE_INTERVAL:-20}"
 export NO_SAVE_OPTIM="${NO_SAVE_OPTIM:-1}"
 export RUN_NAME="${RUN_NAME:-$SETTING-$METHOD_ID-s${SEED:-1234}-avg8}"
-export SAVE_DIR="${SAVE_DIR:-$OPSA_ROOT/outputs/$RUN_NAME}"
+export SAVE_DIR="${SAVE_DIR:-$BOPD_ROOT/outputs/$RUN_NAME}"
 
 for variable in OPD_SURE_ALPHA OPD_GEOMETRY_ALPHA OPD_BERNOULLI_CLIP OPD_BALANCE_ALPHA OPD_BALANCE_BINS OPD_BALANCE_MAX_WEIGHT; do
   if [[ -n "${!variable:-}" ]]; then
@@ -44,4 +44,4 @@ for variable in OPD_SURE_ALPHA OPD_GEOMETRY_ALPHA OPD_BERNOULLI_CLIP OPD_BALANCE
   fi
 done
 
-exec "$ROOT/examples/opsa/run-qwen3-1.7B-opd-opsa-study.sh"
+exec "$ROOT/examples/bopd/run-qwen3-1.7B-bopd-study.sh"

@@ -8,7 +8,7 @@ if [[ "${SKIP_CONDA_ACTIVATE:-0}" != "1" ]]; then
   [[ -f "$CONDA_SH" ]] || { echo "ERROR: missing $CONDA_SH" >&2; exit 1; }
   # shellcheck disable=SC1090
   source "$CONDA_SH"
-  conda activate "${CONDA_ENV_NAME:-opsa-slime}"
+  conda activate "${CONDA_ENV_NAME:-bopd-slime}"
 fi
 
 export PYTHONUNBUFFERED=1
@@ -16,17 +16,17 @@ export CUDA_DEVICE_MAX_CONNECTIONS=1
 export TOKENIZERS_PARALLELISM=false
 
 SCRIPT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-export OPSA_ROOT="${OPSA_ROOT:-$SCRIPT_ROOT}"
+export BOPD_ROOT="${BOPD_ROOT:-$SCRIPT_ROOT}"
 export SLIME_DIR="${SLIME_DIR:-$SCRIPT_ROOT}"
-export SGLANG_DIR="${SGLANG_DIR:-$OPSA_ROOT/sglang}"
-export MEGATRON_DIR="${MEGATRON_DIR:-$OPSA_ROOT/Megatron-LM}"
-export HF_CKPT="${HF_CKPT:-$OPSA_ROOT/models/Qwen3-1.7B}"
-export MCORE_CKPT="${MCORE_CKPT:-$OPSA_ROOT/models/Qwen3-1.7B_torch_dist}"
-export OPD_TEACHER_MODEL="${OPD_TEACHER_MODEL:-$OPSA_ROOT/models/Qwen3-4B-Instruct-2507}"
+export SGLANG_DIR="${SGLANG_DIR:-$BOPD_ROOT/sglang}"
+export MEGATRON_DIR="${MEGATRON_DIR:-$BOPD_ROOT/Megatron-LM}"
+export HF_CKPT="${HF_CKPT:-$BOPD_ROOT/models/Qwen3-1.7B}"
+export MCORE_CKPT="${MCORE_CKPT:-$BOPD_ROOT/models/Qwen3-1.7B_torch_dist}"
+export OPD_TEACHER_MODEL="${OPD_TEACHER_MODEL:-$BOPD_ROOT/models/Qwen3-4B-Instruct-2507}"
 export MODEL_ARGS_SCRIPT="${MODEL_ARGS_SCRIPT:-scripts/models/qwen3-1.7B.sh}"
 export OPD_TEACHER_URL="${OPD_TEACHER_URL:-}"
-export PROMPT_DATA="${PROMPT_DATA:-$OPSA_ROOT/data/dapo-math-17k/dapo-math-17k.jsonl}"
-export EVAL_DATA="${EVAL_DATA:-$OPSA_ROOT/data/aime-2024/aime-2024.jsonl}"
+export PROMPT_DATA="${PROMPT_DATA:-$BOPD_ROOT/data/dapo-math-17k/dapo-math-17k.jsonl}"
+export EVAL_DATA="${EVAL_DATA:-$BOPD_ROOT/data/aime-2024/aime-2024.jsonl}"
 
 export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
 export CUDA_PATH="$CUDA_HOME"
@@ -56,9 +56,9 @@ OPD_BALANCE_MAX_WEIGHT="${OPD_BALANCE_MAX_WEIGHT:-5.0}"
 OPD_DIAGNOSTICS_INTERVAL="${OPD_DIAGNOSTICS_INTERVAL:-0}"
 OPD_KL_COEF="${OPD_KL_COEF:-1.0}"
 OVERRIDE_OPT_PARAM_SCHEDULER="${OVERRIDE_OPT_PARAM_SCHEDULER:-0}"
-OPSA_MODE="${OPSA_MODE:-entropy}"
-OPSA_TOKEN_FRACTION="${OPSA_TOKEN_FRACTION:-0.2}"
-OPSA_FIXED_ADVANTAGE="${OPSA_FIXED_ADVANTAGE:--0.5}"
+BOPD_MODE="${BOPD_MODE:-entropy}"
+BOPD_TOKEN_FRACTION="${BOPD_TOKEN_FRACTION:-0.2}"
+BOPD_FIXED_ADVANTAGE="${BOPD_FIXED_ADVANTAGE:--0.5}"
 
 ACTOR_GPUS="${ACTOR_GPUS:-2}"
 ROLLOUT_GPUS="${ROLLOUT_GPUS:-2}"
@@ -118,18 +118,18 @@ case "$METHOD" in
   opd)
     DEFAULT_RUN_NAME="opd-${OPD_LOSS_TYPE}-${OPD_TOKEN_FILTER}"
     ;;
-  opsa)
-    DEFAULT_RUN_NAME="opsa-${OPSA_MODE}-bottom${OPSA_TOKEN_FRACTION}"
+  bopd)
+    DEFAULT_RUN_NAME="bopd-${BOPD_MODE}-bottom${BOPD_TOKEN_FRACTION}"
     ;;
   *)
-    echo "ERROR: METHOD must be opd or opsa, got $METHOD" >&2
+    echo "ERROR: METHOD must be opd or bopd, got $METHOD" >&2
     exit 2
     ;;
 esac
 
 RUN_NAME="${RUN_NAME:-$DEFAULT_RUN_NAME}"
-SAVE_DIR="${SAVE_DIR:-$OPSA_ROOT/outputs/qwen3-1.7b-$RUN_NAME}"
-LOG_FILE="${LOG_FILE:-$OPSA_ROOT/logs/qwen3-1.7b-$RUN_NAME-${SLURM_JOB_ID:-manual}.log}"
+SAVE_DIR="${SAVE_DIR:-$BOPD_ROOT/outputs/qwen3-1.7b-$RUN_NAME}"
+LOG_FILE="${LOG_FILE:-$BOPD_ROOT/logs/qwen3-1.7b-$RUN_NAME-${SLURM_JOB_ID:-manual}.log}"
 
 for path in "$SLIME_DIR" "$SGLANG_DIR" "$MEGATRON_DIR" "$HF_CKPT" "$MCORE_CKPT"; do
   [[ -e "$path" ]] || { echo "ERROR: missing $path" >&2; exit 1; }
@@ -233,8 +233,8 @@ if [[ "$START_LOCAL_OPD_TEACHER" == "1" ]]; then
   }
 fi
 
-mkdir -p "$OPSA_ROOT/logs" "$SAVE_DIR"
-OPD_TEACHER_LOG="${OPD_TEACHER_LOG:-$OPSA_ROOT/logs/qwen3-4b-teacher-${SLURM_JOB_ID:-manual}.log}"
+mkdir -p "$BOPD_ROOT/logs" "$SAVE_DIR"
+OPD_TEACHER_LOG="${OPD_TEACHER_LOG:-$BOPD_ROOT/logs/qwen3-4b-teacher-${SLURM_JOB_ID:-manual}.log}"
 OPD_TEACHER_PID=""
 RETENTION_MONITOR_PID=""
 
@@ -331,7 +331,7 @@ start_opd_teacher() {
   echo "OPD teacher ready: $OPD_TEACHER_URL (log: $OPD_TEACHER_LOG)"
 }
 
-echo "========== Qwen3-1.7B OPD/OPSA study =========="
+echo "========== Qwen3-1.7B OPD/BOPD study =========="
 echo "host/job:              $(hostname) / ${SLURM_JOB_ID:-none}"
 echo "method:                $METHOD"
 echo "run:                   $RUN_NAME"
@@ -344,7 +344,7 @@ echo "OPD Bernoulli clip:    $OPD_BERNOULLI_CLIP (0=off)"
 echo "OPD balance a/bins/max: $OPD_BALANCE_ALPHA / $OPD_BALANCE_BINS / $OPD_BALANCE_MAX_WEIGHT"
 echo "OPD diagnostics every: $OPD_DIAGNOSTICS_INTERVAL rollout(s); 0=off"
 echo "OPD coefficient:       $OPD_KL_COEF"
-echo "OPSA mode/fraction:    $OPSA_MODE / $OPSA_TOKEN_FRACTION"
+echo "BOPD mode/fraction:    $BOPD_MODE / $BOPD_TOKEN_FRACTION"
 echo "actor/rollout GPUs:    $ACTOR_GPUS / $ROLLOUT_GPUS"
 echo "rollouts:              $NUM_ROLLOUT"
 echo "batch:                 $ROLLOUT_BATCH_SIZE x $N_SAMPLES = $GLOBAL_BATCH_SIZE"
@@ -513,18 +513,18 @@ if [[ "$METHOD" == "opd" ]]; then
   )
 else
   ALGORITHM_ARGS=(
-    --advantage-estimator opsa
-    --opsa-mode "$OPSA_MODE"
-    --opsa-token-fraction "$OPSA_TOKEN_FRACTION"
+    --advantage-estimator bopd
+    --bopd-mode "$BOPD_MODE"
+    --bopd-token-fraction "$BOPD_TOKEN_FRACTION"
     --kl-coef 0
     --entropy-coef 0
   )
-  if [[ "$OPSA_MODE" == "fixed" ]]; then
-    ALGORITHM_ARGS+=(--opsa-fixed-advantage "$OPSA_FIXED_ADVANTAGE")
+  if [[ "$BOPD_MODE" == "fixed" ]]; then
+    ALGORITHM_ARGS+=(--bopd-fixed-advantage "$BOPD_FIXED_ADVANTAGE")
   fi
   RM_ARGS=(
-    --custom-rm-path slime.rollout.opsa.reward_func
-    --custom-reward-post-process-path slime.rollout.opsa.post_process_rewards
+    --custom-rm-path slime.rollout.bopd.reward_func
+    --custom-reward-post-process-path slime.rollout.bopd.post_process_rewards
   )
 fi
 
@@ -596,7 +596,7 @@ if [[ "$RETAIN_BEST_AND_LAST" == "1" ]]; then
         --metric "$RETENTION_METRIC" \
         "${RETENTION_KEEP_ARGS[@]}" \
         --apply \
-        >>"$OPSA_ROOT/logs/checkpoint-retention-${RUN_NAME}-${SLURM_JOB_ID:-manual}.log" 2>&1 || true
+        >>"$BOPD_ROOT/logs/checkpoint-retention-${RUN_NAME}-${SLURM_JOB_ID:-manual}.log" 2>&1 || true
     done
   ) &
   RETENTION_MONITOR_PID=$!

@@ -37,7 +37,7 @@ from .cp_utils import (
     slice_log_prob_with_cp,
 )
 from .opd import compute_opd_selection, compute_opd_token_loss, uses_direct_opd_objective
-from .opsa import compute_opsa
+from .bopd import compute_bopd
 
 ROLLOUT_TOP_P_TOKEN_KEYS = (
     "rollout_top_p_token_ids",
@@ -748,7 +748,7 @@ def apply_opd_kl_to_advantages(
 
 
 
-def _compute_opsa_for_rollout(
+def _compute_bopd_for_rollout(
     args: Namespace,
     rollout_data: RolloutBatch,
     student_log_probs: list[torch.Tensor] | None,
@@ -756,13 +756,13 @@ def _compute_opsa_for_rollout(
     total_lengths: list[int],
     response_lengths: list[int],
 ) -> tuple[list[torch.Tensor], list[torch.Tensor]]:
-    """Run one baseline OPSA selection over the complete DP-local packed batch."""
+    """Run one baseline BOPD selection over the complete DP-local packed batch."""
     if student_log_probs is None:
-        raise ValueError("OPSA requires log-probs recomputed by the current Megatron actor.")
+        raise ValueError("BOPD requires log-probs recomputed by the current Megatron actor.")
 
     entropies = rollout_data.get("entropy")
-    if args.opsa_mode == "entropy" and entropies is None:
-        raise ValueError("OPSA entropy mode requires actor entropy from the log-prob forward pass.")
+    if args.bopd_mode == "entropy" and entropies is None:
+        raise ValueError("BOPD entropy mode requires actor entropy from the log-prob forward pass.")
 
     cp_size = mpu.get_context_parallel_world_size()
     if cp_size > 1:
@@ -784,20 +784,20 @@ def _compute_opsa_for_rollout(
         full_log_probs = student_log_probs
         full_entropies = entropies
 
-    output = compute_opsa(
+    output = compute_bopd(
         full_log_probs,
         loss_masks,
-        token_fraction=args.opsa_token_fraction,
-        mode=args.opsa_mode,
+        token_fraction=args.bopd_token_fraction,
+        mode=args.bopd_mode,
         entropies=full_entropies,
-        advantage_min=args.opsa_advantage_min,
-        advantage_max=args.opsa_advantage_max,
-        fixed_advantage=args.opsa_fixed_advantage,
+        advantage_min=args.bopd_advantage_min,
+        advantage_max=args.bopd_advantage_max,
+        fixed_advantage=args.bopd_fixed_advantage,
     )
 
     # Keep the full response-space mask. The CP-aware reducer will slice it
     # consistently with the local policy-gradient tensors during training.
-    rollout_data["opsa_loss_mask"] = output.loss_masks
+    rollout_data["bopd_loss_mask"] = output.loss_masks
     rollout_data.update({key: value.detach() for key, value in output.metrics.items()})
 
     if cp_size == 1:
@@ -850,8 +850,8 @@ def compute_advantages_and_returns(args: Namespace, rollout_data: RolloutBatch) 
     if not mpu.is_pipeline_last_stage():
         return
 
-    if args.advantage_estimator == "opsa":
-        advantages, returns = _compute_opsa_for_rollout(
+    if args.advantage_estimator == "bopd":
+        advantages, returns = _compute_bopd_for_rollout(
             args,
             rollout_data,
             log_probs,
@@ -1236,14 +1236,14 @@ def policy_loss_function(
     use_score_centering = getattr(args, "use_score_centering", False)
     advantages = torch.cat(batch["advantages"], dim=0)
     old_log_probs = batch["rollout_log_probs"] if args.use_rollout_logprobs else batch.get("log_probs")
-    opsa_loss_mask = batch.get("opsa_loss_mask")
+    bopd_loss_mask = batch.get("bopd_loss_mask")
     opd_loss_mask = batch.get("opd_loss_mask")
     direct_opd_objective = uses_direct_opd_objective(args)
 
     response_lengths = batch["response_lengths"]
     total_lengths = batch["total_lengths"]
 
-    with_entropy = args.advantage_estimator != "opsa" or args.opsa_mode == "entropy"
+    with_entropy = args.advantage_estimator != "bopd" or args.bopd_mode == "entropy"
     _, log_probs_and_entropy = get_log_probs_and_entropy(
         logits,
         args=args,
@@ -1417,17 +1417,17 @@ def policy_loss_function(
             sampled_ratio = (log_probs - torch.cat(batch["rollout_log_probs"])).exp()
             sc_terms["sc_importance_weight"] = importance_weights(sampled_ratio, **get_score_centering_is_config(args))
 
-    # OPSA normalizes policy-gradient terms over selected tokens rather than
+    # BOPD normalizes policy-gradient terms over selected tokens rather than
     # diluting them by the full response length.
     base_pg_loss_masks = (
         modified_response_masks if (args.get_mismatch_metrics or args.use_tis) else batch["loss_masks"]
     )
     selected_pg_loss_reducer = None
     pg_loss_masks = base_pg_loss_masks
-    if opsa_loss_mask is not None:
+    if bopd_loss_mask is not None:
         pg_loss_masks = [
-            response_mask.to(device=opsa_mask.device, dtype=opsa_mask.dtype) * opsa_mask
-            for response_mask, opsa_mask in zip(base_pg_loss_masks, opsa_loss_mask, strict=True)
+            response_mask.to(device=bopd_mask.device, dtype=bopd_mask.dtype) * bopd_mask
+            for response_mask, bopd_mask in zip(base_pg_loss_masks, bopd_loss_mask, strict=True)
         ]
         selected_pg_loss_reducer = get_sum_of_sample_mean(
             total_lengths,
@@ -1533,14 +1533,14 @@ def policy_loss_function(
     if opd_objective_loss is not None:
         reported_loss["opd/objective_loss"] = opd_objective_loss.clone().detach()
 
-    if opsa_loss_mask is not None:
+    if bopd_loss_mask is not None:
         selected = (advantages != 0).to(dtype=advantages.dtype)
-        reported_loss["opsa/selected_fraction"] = sum_of_sample_mean(selected).clone().detach()
-        reported_loss["opsa/advantage_mean"] = pg_loss_reducer(advantages).clone().detach()
-        reported_loss["opsa/negative_fraction"] = pg_loss_reducer(
+        reported_loss["bopd/selected_fraction"] = sum_of_sample_mean(selected).clone().detach()
+        reported_loss["bopd/advantage_mean"] = pg_loss_reducer(advantages).clone().detach()
+        reported_loss["bopd/negative_fraction"] = pg_loss_reducer(
             (advantages < 0).to(dtype=advantages.dtype)
         ).clone().detach()
-        reported_loss["opsa/positive_fraction"] = pg_loss_reducer(
+        reported_loss["bopd/positive_fraction"] = pg_loss_reducer(
             (advantages > 0).to(dtype=advantages.dtype)
         ).clone().detach()
 
@@ -1705,9 +1705,9 @@ def loss_function(
         - `logging_dict` has keys "keys" (list of str metric names) and
           "values" (1D tensor: [count, metric1, metric2, ...]).
     """
-    opsa_loss_mask = batch.get("opsa_loss_mask")
-    if opsa_loss_mask is not None:
-        num_tokens = torch.clamp_min(sum(mask.sum() for mask in opsa_loss_mask), 1)
+    bopd_loss_mask = batch.get("bopd_loss_mask")
+    if bopd_loss_mask is not None:
+        num_tokens = torch.clamp_min(sum(mask.sum() for mask in bopd_loss_mask), 1)
     else:
         num_tokens = sum([torch.clamp_min(loss_mask.sum(), 1) for loss_mask in batch["loss_masks"]])
 

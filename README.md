@@ -92,7 +92,7 @@ export DATA_ROOT=/path/to/data
 ```
 
 If the Conda environment is already active, set `SKIP_CONDA_ACTIVATE=1`. Otherwise the scripts
-use `CONDA_ENV_NAME=opsa-slime` and `CONDA_SH=$HOME/miniconda3/etc/profile.d/conda.sh`.
+use `CONDA_ENV_NAME=bopd-slime` and `CONDA_SH=$HOME/miniconda3/etc/profile.d/conda.sh`.
 
 The included `build_conda.sh` is a reference recipe and pins cuDNN 9.17.1.4 for the tested stack;
 users should select compatible compiled packages for their own hardware. The CUDA container can be built from the repository root with

@@ -22,13 +22,21 @@ jobs:
           python -m compileall -q \
             setup.py \
             scripts/download_data.py \
+            slime/backends/megatron_utils/actor.py \
+            slime/backends/megatron_utils/bopd.py \
+            slime/backends/megatron_utils/loss.py \
+            slime/backends/megatron_utils/model.py \
             slime/backends/megatron_utils/opd.py \
-            slime/rollout/on_policy_distillation.py
+            slime/rollout/bopd.py \
+            slime/rollout/on_policy_distillation.py \
+            slime/rollout/rm_hub/__init__.py \
+            slime/utils/arguments.py \
+            tests/test_bopd_baseline.py
 
       - name: Check shell syntax
         run: |
           bash -n build_conda.sh
-          find scripts examples/opsa -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
+          find scripts examples/bopd -type f -name '*.sh' -print0 | xargs -0 -n1 bash -n
 
       - name: Check release invariants
         run: |

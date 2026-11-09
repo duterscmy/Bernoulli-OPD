@@ -25,10 +25,10 @@ load_method() {
 
 resolve_release_paths() {
   local root="$1"
-  export OPSA_ROOT="${OPSA_ROOT:-$root}"
+  export BOPD_ROOT="${BOPD_ROOT:-$root}"
   export SLIME_DIR="${SLIME_DIR:-$root}"
-  export MODEL_ROOT="${MODEL_ROOT:-$OPSA_ROOT/models}"
-  export DATA_ROOT="${DATA_ROOT:-$OPSA_ROOT/data}"
+  export MODEL_ROOT="${MODEL_ROOT:-$BOPD_ROOT/models}"
+  export DATA_ROOT="${DATA_ROOT:-$BOPD_ROOT/data}"
   export HF_CKPT="${HF_CKPT:-$MODEL_ROOT/$HF_CKPT_REL}"
   export MCORE_CKPT="${MCORE_CKPT:-$MODEL_ROOT/$MCORE_CKPT_REL}"
   export OPD_TEACHER_MODEL="${OPD_TEACHER_MODEL:-$MODEL_ROOT/$TEACHER_CKPT_REL}"

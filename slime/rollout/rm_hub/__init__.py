@@ -61,7 +61,7 @@ async def async_rm(args, sample: Sample, **kwargs):
     metadata = sample.metadata if isinstance(sample.metadata, dict) else {}
     rm_type = (metadata.get("rm_type") or args.rm_type or "").strip()
     # Dataset-specific evaluation metadata must override a training-only
-    # custom RM (for example OPSA's zero scalar-reward hook).
+    # custom RM (for example BOPD's zero scalar-reward hook).
     if not rm_type and args.custom_rm_path is not None:
         rm_function = load_function(args.custom_rm_path)
         return await rm_function(args, sample, **kwargs)

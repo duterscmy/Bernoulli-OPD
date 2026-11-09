@@ -1,12 +1,12 @@
 import torch
 
-from slime.backends.megatron_utils.opsa import compute_opsa
+from slime.backends.megatron_utils.bopd import compute_bopd
 
 
-def test_fixed_opsa_selects_lowest_logp_tokens_across_batch():
+def test_fixed_bopd_selects_lowest_logp_tokens_across_batch():
     log_probs = [torch.tensor([-0.1, -3.0, -0.2]), torch.tensor([-2.0, -0.3])]
     masks = [torch.ones(3), torch.ones(2)]
-    out = compute_opsa(
+    out = compute_bopd(
         log_probs,
         masks,
         token_fraction=0.4,
@@ -20,10 +20,10 @@ def test_fixed_opsa_selects_lowest_logp_tokens_across_batch():
     assert out.advantages[1].tolist() == [-0.5, 0.0]
 
 
-def test_opsa_loss_mask_stays_float_with_integer_response_mask():
+def test_bopd_loss_mask_stays_float_with_integer_response_mask():
     log_probs = [torch.tensor([-0.1, -3.0, -0.2, -2.0])]
     masks = [torch.ones(4, dtype=torch.int64)]
-    out = compute_opsa(
+    out = compute_bopd(
         log_probs,
         masks,
         token_fraction=0.5,
@@ -34,11 +34,11 @@ def test_opsa_loss_mask_stays_float_with_integer_response_mask():
     assert out.loss_masks[0].tolist() == [0.0, 1.0, 0.0, 1.0]
 
 
-def test_entropy_opsa_maps_higher_entropy_to_more_negative_advantage():
+def test_entropy_bopd_maps_higher_entropy_to_more_negative_advantage():
     log_probs = [torch.tensor([-3.0, -2.0, -0.1, -0.2])]
     masks = [torch.ones(4)]
     entropies = [torch.tensor([2.0, 1.0, 0.1, 0.1])]
-    out = compute_opsa(
+    out = compute_bopd(
         log_probs,
         masks,
         token_fraction=0.5,

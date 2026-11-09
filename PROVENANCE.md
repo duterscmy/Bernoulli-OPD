@@ -38,14 +38,18 @@ The main project-specific implementation and reproduction surface includes:
 - `slime/rollout/on_policy_distillation.py`;
 - OPD arguments and diagnostic logging;
 - `configs/methods/`, `configs/settings/`, and the launch/evaluation scripts under `scripts/`;
-- `examples/opsa/` and OPD/OPSA objective tests;
+- `examples/bopd/` and OPD/BOPD objective tests;
 - release metadata, pinned model/data inputs, and reproduction documentation.
 
 The paper implementation includes Vanilla OPD, SuRe, PowerOPD, GC-OPD, Bernoulli OPD, and
 Balanced Bernoulli. The top-level `scripts/` entry points, two student-model presets,
-`examples/opsa/`, and focused OPD/OPSA tests are maintained for the paper. Generic upstream
+`examples/bopd/`, and focused OPD/BOPD tests are maintained for the paper. Generic upstream
 launchers, examples, documentation, conversion utilities, and hardware/model-specific tests are
 excluded from the public release; they remain available from the upstream Slime project.
+
+The BOPD low-confidence token-selection baseline was adapted from an earlier OPSA implementation
+used during development. Public modules, commands, metrics, and documentation use the BOPD name;
+this lineage note is retained solely for accurate attribution.
 
 ## Patched runtime dependencies
 

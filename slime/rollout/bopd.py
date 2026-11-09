@@ -1,8 +1,8 @@
-"""Reward hooks for teacher-free OPSA training."""
+"""Reward hooks for teacher-free BOPD training."""
 
 
 async def reward_func(args, sample, **kwargs):
-    """Return zero task reward; OPSA supplies the token-level learning signal."""
+    """Return zero task reward; BOPD supplies the token-level learning signal."""
     if isinstance(sample, list):
         return [0.0] * len(sample)
     return 0.0

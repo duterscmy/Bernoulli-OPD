@@ -11,8 +11,8 @@ Use either the platform-specific Conda build or the CUDA image. Both commands mu
 the repository root.
 
 ```bash
-# Conda/micromamba environment; defaults to opsa-slime.
-CONDA_ENV_NAME=opsa-slime bash build_conda.sh
+# Conda/micromamba environment; defaults to bopd-slime.
+CONDA_ENV_NAME=bopd-slime bash build_conda.sh
 
 # Or build the CUDA image from this source tree.
 docker build -f docker/Dockerfile -t bernoulli-opd:1.0.0 .

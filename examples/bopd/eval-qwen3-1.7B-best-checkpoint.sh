@@ -11,7 +11,7 @@ if [[ "${SKIP_CONDA_ACTIVATE:-0}" != "1" ]]; then
   [[ -f "$CONDA_SH" ]] || { echo "ERROR: missing $CONDA_SH" >&2; exit 1; }
   # shellcheck disable=SC1090
   source "$CONDA_SH"
-  conda activate "${CONDA_ENV_NAME:-opsa-slime}"
+  conda activate "${CONDA_ENV_NAME:-bopd-slime}"
 fi
 
 export PYTHONUNBUFFERED=1
@@ -19,19 +19,19 @@ export CUDA_DEVICE_MAX_CONNECTIONS=1
 export TOKENIZERS_PARALLELISM=false
 
 SCRIPT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-export OPSA_ROOT="${OPSA_ROOT:-$SCRIPT_ROOT}"
+export BOPD_ROOT="${BOPD_ROOT:-$SCRIPT_ROOT}"
 export SLIME_DIR="${SLIME_DIR:-$SCRIPT_ROOT}"
-export SGLANG_DIR="${SGLANG_DIR:-$OPSA_ROOT/sglang}"
-export MEGATRON_DIR="${MEGATRON_DIR:-$OPSA_ROOT/Megatron-LM}"
-export HF_CKPT="${HF_CKPT:-$OPSA_ROOT/models/Qwen3-1.7B}"
-export MCORE_CKPT="${MCORE_CKPT:-$OPSA_ROOT/models/Qwen3-1.7B_torch_dist}"
+export SGLANG_DIR="${SGLANG_DIR:-$BOPD_ROOT/sglang}"
+export MEGATRON_DIR="${MEGATRON_DIR:-$BOPD_ROOT/Megatron-LM}"
+export HF_CKPT="${HF_CKPT:-$BOPD_ROOT/models/Qwen3-1.7B}"
+export MCORE_CKPT="${MCORE_CKPT:-$BOPD_ROOT/models/Qwen3-1.7B_torch_dist}"
 export MODEL_ARGS_SCRIPT="${MODEL_ARGS_SCRIPT:-scripts/models/qwen3-1.7B.sh}"
-export AIME24_DATA="${AIME24_DATA:-$OPSA_ROOT/data/aime-2024/aime-2024.jsonl}"
-export AIME25_DATA="${AIME25_DATA:-$OPSA_ROOT/data/aime-2025/aime-2025.jsonl}"
-export HMMT25_DATA="${HMMT25_DATA:-$OPSA_ROOT/data/hmmt-feb-2025/hmmt-feb-2025.jsonl}"
-export MATH500_DATA="${MATH500_DATA:-$OPSA_ROOT/data/math-500/math-500.jsonl}"
-export AMC23_DATA="${AMC23_DATA:-$OPSA_ROOT/data/amc-2023/amc-2023.jsonl}"
-export MBPP_PLUS_DATA="${MBPP_PLUS_DATA:-$OPSA_ROOT/data/mbpp-plus/mbpp-plus-eval.jsonl}"
+export AIME24_DATA="${AIME24_DATA:-$BOPD_ROOT/data/aime-2024/aime-2024.jsonl}"
+export AIME25_DATA="${AIME25_DATA:-$BOPD_ROOT/data/aime-2025/aime-2025.jsonl}"
+export HMMT25_DATA="${HMMT25_DATA:-$BOPD_ROOT/data/hmmt-feb-2025/hmmt-feb-2025.jsonl}"
+export MATH500_DATA="${MATH500_DATA:-$BOPD_ROOT/data/math-500/math-500.jsonl}"
+export AMC23_DATA="${AMC23_DATA:-$BOPD_ROOT/data/amc-2023/amc-2023.jsonl}"
+export MBPP_PLUS_DATA="${MBPP_PLUS_DATA:-$BOPD_ROOT/data/mbpp-plus/mbpp-plus-eval.jsonl}"
 
 export CUDA_HOME="${CUDA_HOME:-/usr/local/cuda}"
 export CUDA_PATH="$CUDA_HOME"
@@ -62,7 +62,7 @@ BASE_MODEL="${BASE_MODEL:-0}"
 SEED="${SEED:-1234}"
 ROLLOUT_SEED="${ROLLOUT_SEED:-42}"
 CHECKPOINT_STEP="${CHECKPOINT_STEP:-0}"
-LOG_FILE="${LOG_FILE:-$OPSA_ROOT/logs/eval-${RUN_ID}-${EVAL_SUITE}-k${N_SAMPLES_PER_EVAL_PROMPT}-rseed${ROLLOUT_SEED}-${SLURM_JOB_ID:-manual}.log}"
+LOG_FILE="${LOG_FILE:-$BOPD_ROOT/logs/eval-${RUN_ID}-${EVAL_SUITE}-k${N_SAMPLES_PER_EVAL_PROMPT}-rseed${ROLLOUT_SEED}-${SLURM_JOB_ID:-manual}.log}"
 DEBUG_DUMP="${DEBUG_DUMP:-}"
 DEBUG_EVAL_CHECKPOINT_INTERVAL="${DEBUG_EVAL_CHECKPOINT_INTERVAL:-0}"
 SGLANG_DETERMINISTIC_INFERENCE="${SGLANG_DETERMINISTIC_INFERENCE:-0}"
@@ -172,7 +172,7 @@ NEEDED_GPUS="$((ACTOR_GPUS + ROLLOUT_GPUS))"
   exit 1
 }
 
-mkdir -p "$OPSA_ROOT/logs"
+mkdir -p "$BOPD_ROOT/logs"
 
 cleanup() {
   local status=$?
@@ -182,7 +182,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-echo "========== OPSA-compatible benchmark evaluation =========="
+echo "========== BOPD-compatible benchmark evaluation =========="
 echo "host/job:              $(hostname) / ${SLURM_JOB_ID:-none}"
 echo "run/checkpoint:        $RUN_ID / $CHECKPOINT_LABEL"
 echo "checkpoint root:       $CHECKPOINT_ROOT"
