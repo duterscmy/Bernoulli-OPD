@@ -6,11 +6,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-__version__ = "0.3.2"
+__version__ = (Path(__file__).resolve().parents[1] / "VERSION").read_text(encoding="utf-8").strip()
 
-project = "slime"
-copyright = f"2025-{datetime.now().year}, slime"
-author = "slime Team"
+project = "Bernoulli OPD"
+copyright = f"2026-{datetime.now().year}, Bernoulli OPD authors and Slime contributors"
+author = "Mingyu Cao, Yaokai Jin, Shiwei Liu, and Lu Yin"
 
 version = __version__
 release = __version__
@@ -106,7 +106,7 @@ html_copy_source = True
 html_last_updated_fmt = ""
 
 html_theme_options = {
-    "repository_url": "https://github.com/THUDM/slime",
+    "repository_url": "https://github.com/duterscmy/Bernoulli-OPD",
     "repository_branch": "main",
     "show_navbar_depth": 3,
     "max_navbar_depth": 4,
@@ -122,8 +122,8 @@ html_theme_options = {
 
 html_context = {
     "display_github": True,
-    "github_user": "sgl-project",
-    "github_repo": "sgl-project.github.io",
+    "github_user": "duterscmy",
+    "github_repo": "Bernoulli-OPD",
     "github_version": "main",
     "conf_py_path": "/docs/",
 }
@@ -202,25 +202,25 @@ myst_enable_extensions = [
 ]
 myst_heading_anchors = 5
 
-htmlhelp_basename = "slimedoc"
+htmlhelp_basename = "bernoulliopddoc"
 
 latex_elements = {}
 
 latex_documents = [
-    (master_doc, "slime.tex", "slime Documentation", "slime Team", "manual"),
+    (master_doc, "bernoulli-opd.tex", "Bernoulli OPD Documentation", author, "manual"),
 ]
 
-man_pages = [(master_doc, "slime", "slime Documentation", [author], 1)]
+man_pages = [(master_doc, "bernoulli-opd", "Bernoulli OPD Documentation", [author], 1)]
 
 texinfo_documents = [
     (
         master_doc,
-        "slime",
-        "slime Documentation",
+        "bernoulli-opd",
+        "Bernoulli OPD Documentation",
         author,
-        "slime",
-        "One line description of project.",
-        "Miscellaneous",
+        "BernoulliOPD",
+        "Reference implementation of Bernoulli On-Policy Distillation.",
+        "Machine Learning",
     ),
 ]
 

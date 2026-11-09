@@ -25,6 +25,14 @@ Yaokai Jin<sup>2</sup>,
 
 </div>
 
+[![release sanity](https://github.com/duterscmy/Bernoulli-OPD/actions/workflows/ci.yml/badge.svg)](https://github.com/duterscmy/Bernoulli-OPD/actions/workflows/ci.yml)
+[![version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/duterscmy/Bernoulli-OPD)
+
+This repository is the reference implementation for
+[arXiv:2611.02093](https://arxiv.org/abs/2611.02093). It is intentionally maintained as a full
+Slime source fork plus a paper-reproduction layer; the upstream baseline, project-specific
+surface, and synchronization policy are documented in [PROVENANCE.md](PROVENANCE.md).
+
 
 ![Figure 1: token distribution and gradient allocation](assets/figure1.png)
 
@@ -42,6 +50,10 @@ the direct probability-gap signal `p_S - p_T`.
 - One training entry point and one evaluation entry point.
 - AIME24 Avg@8 checkpoint selection by default.
 - Final evaluation defaults matching the experiments: Avg@32 for competition benchmarks, MATH500 is always Avg@4.
+
+See [RESULTS.md](RESULTS.md) for the complete reported table and [REPRODUCING.md](REPRODUCING.md)
+for the model downloads, conversion, complete training matrix, PowerOPD reference recipe,
+checkpoint selection, and final evaluation commands.
 
 
 ## Experimental settings
@@ -81,6 +93,11 @@ export DATA_ROOT=/path/to/data
 If the Conda environment is already active, set `SKIP_CONDA_ACTIVATE=1`. Otherwise the scripts
 use `CONDA_ENV_NAME=opsa-slime` and `CONDA_SH=$HOME/miniconda3/etc/profile.d/conda.sh`.
 
+The included `build_conda.sh` is a reference recipe and pins cuDNN 9.17.1.4 for the tested stack;
+users should select compatible compiled packages for their own hardware. The CUDA container can be built from the repository root with
+`docker build -f docker/Dockerfile -t bernoulli-opd:1.0.0 .`; it installs this checkout rather
+than fetching a separate upstream Slime tree.
+
 ## Models and data
 
 Download and convert the student models to Megatron distributed checkpoints using Slime's
@@ -98,7 +115,18 @@ models/
 └── Skywork-OR1-Math-7B/
 ```
 
-Public model identifiers are listed in each file under `configs/settings/`.
+Public model identifiers and immutable revisions are listed in each file under
+`configs/settings/`:
+
+| Model | Revision |
+|---|---|
+| `Qwen/Qwen3-1.7B` | `70d244cc86ccca08cf5af4e1e306ecf908b1ad5e` |
+| `Qwen/Qwen3-4B-Instruct-2507` | `cdbee75f17c01a7cc42f958dc650907174af0554` |
+| `pb09204048/Qwen3-8B-DAPO-iter449-disable-thinking` | `18a5b7dad35596cea0756c10330e453e95533ffa` |
+| `deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B` | `ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562` |
+| `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B` | `916b56a44061fd5cd7d6a8fb632557ed4f724f60` |
+| `Skywork/Skywork-OR1-Math-7B` | `fcef970f1d10682f13c182b280146a194ed57d1e` |
+
 Prepare DAPO-Math-17K and the evaluation datasets as JSONL files with
 `prompt` and `label` fields:
 
@@ -179,7 +207,7 @@ then MATH500 with four samples:
 The implementation is built on [Slime](https://github.com/THUDM/slime), Megatron-LM, and
 SGLang. See [`docs/UPSTREAM_SLIME_README.md`](docs/UPSTREAM_SLIME_README.md) for upstream Slime
 documentation. The code is released under the Apache License 2.0; paper figures remain subject
-to the authors' paper copyright.
+to the authors' paper copyright. Contributions are governed by [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Citation
 

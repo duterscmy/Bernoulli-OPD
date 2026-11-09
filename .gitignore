@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Local environments and editor state
+.venv/
+venv/
+.idea/
+.vscode/
+*.swp
+.DS_Store
+.env.local
+.env.*.local
+
+# Experiment artifacts (configuration files under configs/ remain tracked)
+data/
+models/
+outputs/
+results/
+logs/
+wandb/
+ray_results/
+ray_tmp/
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+*.tar
+*.tar.gz
+*.zip
+
+# Generated documentation
+docs/_build/

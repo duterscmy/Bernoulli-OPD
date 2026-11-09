@@ -3,6 +3,7 @@
 set -ex
 
 export SLIME_DIR="${SLIME_DIR:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)}"
+export CONDA_ENV_NAME="${CONDA_ENV_NAME:-opsa-slime}"
 
 # create conda
 yes '' | "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
@@ -18,8 +19,8 @@ if [ -f ~/.condarc ]; then
   sed -i '/^\s*-\s*nodefaults\s*$/d' ~/.condarc
 fi
 
-micromamba create -n slime python=3.12 pip -c conda-forge -y
-micromamba activate slime
+micromamba create -n "$CONDA_ENV_NAME" python=3.12 pip -c conda-forge -y
+micromamba activate "$CONDA_ENV_NAME"
 export CUDA_HOME="$CONDA_PREFIX"
 
 # Keep these in sync with docker/Dockerfile:
@@ -34,12 +35,13 @@ export MEGATRON_COMMIT="1dcf0dafa884ad52ffb243625717a3471643e087"
 export PATCH_VERSION="v0.5.15.post1"
 export TMS_COMMIT="8d30c59ca12a68d9deccbc9c6599076a1218cbc5"
 export FLASH_QLA_COMMIT="821fd9d37ede18fdc2a4e707fefe3770bfc32e58"
+export SGL_ROUTER_COMMIT="9daabcd801c861088d93b8ce8a2a831490ce4bee"
 
 export BASE_DIR=${BASE_DIR:-"/root"}
 cd $BASE_DIR
 
 # install cuda 12.9 as it's the default cuda version for torch
-micromamba install -n slime \
+micromamba install -n "$CONDA_ENV_NAME" \
   cuda=12.9.1 \
   cuda-nvtx=12.9.79 \
   cuda-nvtx-dev=12.9.79 \
@@ -48,10 +50,9 @@ micromamba install -n slime \
   -c nvidia \
   -c conda-forge \
   -y
-micromamba install -n slime -c conda-forge cudnn -y
 # sglang's editable install builds a Rust extension (sglang-grpc via
 # setuptools-rust), so the conda env needs a working rustc + cargo.
-micromamba install -n slime -c conda-forge rust -y
+micromamba install -n "$CONDA_ENV_NAME" -c conda-forge rust -y
 
 # install sglang. The Dockerfile starts FROM slimerl/sglang:v0.5.15.post1-cu129
 # which already has sglang installed with cu129-built native kernels; we have
@@ -99,7 +100,7 @@ pip install --force-reinstall --no-deps \
   nvidia-cuda-cupti-cu12 \
   nvidia-cuda-nvrtc-cu12 \
   nvidia-cuda-runtime-cu12 \
-  nvidia-cudnn-cu12==9.16.0.29 \
+  nvidia-cudnn-cu12==9.17.1.4 \
   nvidia-cufft-cu12 \
   nvidia-cufile-cu12 \
   nvidia-curand-cu12 \
@@ -122,8 +123,14 @@ pip install cmake ninja
 # publish that combination, so pin the community build linked from upstream
 # issue #2425 by its SHA256 digest.
 pip uninstall -y flash-attn-4 flash_attn_4 || true
-pip install --no-deps \
-  "https://github.com/lesj0610/flash-attention/releases/download/v2.8.3-cu12-torch2.11/flash_attn-2.8.3%2Bcu12torch2.11cxx11abiTRUE-cp312-cp312-linux_x86_64.whl#sha256=3d0c8e60f820321eedd7166e79c33cb816263d8be6e35c3f5ba8fe2df6fea697"
+if [ "$(uname -m)" = "x86_64" ]; then
+  pip install --no-deps \
+    "https://github.com/lesj0610/flash-attention/releases/download/v2.8.3-cu12-torch2.11/flash_attn-2.8.3%2Bcu12torch2.11cxx11abiTRUE-cp312-cp312-linux_x86_64.whl#sha256=3d0c8e60f820321eedd7166e79c33cb816263d8be6e35c3f5ba8fe2df6fea697"
+else
+  # The validated GH200 environment is aarch64; the x86_64 wheel above cannot
+  # be installed there, so build the same release against the active stack.
+  pip install "flash-attn==2.8.3" --no-build-isolation
+fi
 
 pip install flash-linear-attention==0.4.2
 # FlashQLA: optional GDN backend for Qwen3.5/Qwen3-Next (--qwen-gdn-backend flashqla; requires SM90+)
@@ -148,7 +155,19 @@ export TMS_CUDA_MAJOR
 pip install -v git+https://github.com/zhuzilin/torch_memory_saver.git@${TMS_COMMIT} \
   --no-cache-dir --force-reinstall --no-build-isolation
 pip install "nvidia-modelopt[torch]>=0.37.0" --no-build-isolation
-pip install https://github.com/zhuzilin/sgl-router/releases/download/v0.3.2-9daabcd/sglang_router-0.3.2-cp38-abi3-manylinux_2_28_x86_64.whl --force-reinstall
+if [ "$(uname -m)" = "x86_64" ]; then
+  pip install https://github.com/zhuzilin/sgl-router/releases/download/v0.3.2-9daabcd/sglang_router-0.3.2-cp38-abi3-manylinux_2_28_x86_64.whl --force-reinstall
+else
+  pip install maturin
+  if [ ! -d "$BASE_DIR/sgl-router" ]; then
+    git clone https://github.com/zhuzilin/sgl-router.git "$BASE_DIR/sgl-router"
+  fi
+  cd "$BASE_DIR/sgl-router"
+  git checkout "$SGL_ROUTER_COMMIT"
+  cd bindings/python
+  maturin build --release --out dist --features vendored-openssl
+  pip install --force-reinstall dist/*.whl
+fi
 python -c "import sglang_router; assert 'slime' in sglang_router.__version__"
 
 # megatron
@@ -179,8 +198,6 @@ pip install -e . --no-deps
 cd $SLIME_DIR/slime/backends/megatron_utils/kernels/int4_qat
 pip install . --no-build-isolation
 
-# https://github.com/pytorch/pytorch/issues/168167
-pip install nvidia-cudnn-cu12==9.16.0.29
 pip install "numpy==1.26.4" "scipy==1.17.1"
 # kernels 0.15.x trips a ValueError("Either a revision or a version must be
 # specified") on `transformers.integrations.hub_kernels` import; pin to <0.15
@@ -245,4 +262,5 @@ assert torch.__version__ == "2.11.0+cu129"
 assert torchaudio.__version__ == "2.11.0+cu129"
 assert torchvision.__version__ == "0.26.0+cu129"
 assert hasattr(torch.ops.torchvision, "nms")
+assert torch.backends.cudnn.version() == 91701
 PY

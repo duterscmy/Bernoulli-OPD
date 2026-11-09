@@ -1,42 +1,33 @@
-# Tested environment
+# Environment compatibility
 
-The released experiment scripts were validated on Linux/aarch64 with four NVIDIA GH200 GPUs.
-These compiled packages are deliberately not placed in `requirements.txt`, because their wheels
-and build flags depend on the CUDA platform.
+The release depends on the following major interfaces. These versions form the tested reference
+stack; exact CUDA wheels and compiler flags should be selected for the user's GPU architecture.
 
-| Component | Tested version or revision |
+| Component | Reference version or revision |
 |---|---|
+| Bernoulli OPD / Slime fork | 1.0.0, based on the Slime 0.3.2-era tree |
 | Python | 3.12 |
-| PyTorch | 2.11.0+cu129 |
-| CUDA toolkit | 12.9.1 |
-| cuDNN | 9.17.1.4 |
-| NCCL | 2.27.7 |
-| SGLang | 0.5.15.post1, source revision `0b3bb0cbe31873994c9f989fddfe2f87ca839fdd` |
-| sglang-kernel | 0.4.4+cu129 |
-| Megatron-LM | source revision `1dcf0dafa884ad52ffb243625717a3471643e087` |
-| Transformer Engine | 2.16.1+c9877be |
-| sglang_router | 0.3.2+slime |
+| Ray | 2.58.0 |
+| PyTorch | 2.11.0 |
+| SGLang | 0.5.15.post1, `0b3bb0cbe31873994c9f989fddfe2f87ca839fdd` |
+| Megatron-LM | `1dcf0dafa884ad52ffb243625717a3471643e087` |
 
-The tested SGLang tree applies Slime's `v0.5.15.post1` patches: `sglang.patch`,
-`sglang-top_p.patch`, `sglang-release_hicache.patch`, `sglang-pull_weights.patch`, and
-`sglang-deterministic.patch`. The tested Megatron-LM tree applies `megatron.patch` and
-`megatron-sglang-aligned.patch` from this Slime version.
+The authors validated the paper runs on Linux/aarch64 with four NVIDIA GH200 GPUs, CUDA 12.9,
+and cuDNN 9.17.1.4. The previous cuDNN 9.16 pin is incompatible with the tested PyTorch build and
+must not be used for that stack. PyTorch, CUDA, cuDNN, NCCL, Apex, Transformer Engine, attention
+kernels, and router wheels otherwise need to match the target hardware and do not have to copy
+the GH200 build exactly.
 
-On the tested GH200/aarch64 stack, SGLang FA3 was unavailable, so all included launchers select
-`--sglang-attention-backend triton`. Megatron attention remains configured independently with
-`--attention-backend flash`.
+The tested SGLang and Megatron trees use the patches under `docker/patch/v0.5.15.post1/`. On the
+tested GH200 stack, SGLang rollout uses `--sglang-attention-backend triton`; users may select a
+different supported backend after validating it on their hardware.
 
-The public scripts accept the following portable environment variables:
+`build_conda.sh` and `docker/Dockerfile` are reference environment recipes, not universal binary
+installers. The runtime entry points only require the external source paths and artifact roots:
 
 ```bash
-export CUDA_HOME=/path/to/cuda
-export NCCL_HOME=/path/to/nccl          # optional when already on the loader path
-export GCC_RUNTIME_LIB=/path/to/lib64   # optional
-export CUDNN_ROOT=/path/to/cudnn        # defaults to the active environment
 export MEGATRON_DIR=/path/to/Megatron-LM
 export SGLANG_DIR=/path/to/sglang
+export MODEL_ROOT=/path/to/models
+export DATA_ROOT=/path/to/data
 ```
-
-Do not interpret this version table as a generic `pip install` recipe. PyTorch, Apex,
-Transformer Engine, SGLang kernels, and the patched source trees must be installed for the target
-GPU architecture.
