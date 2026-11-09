@@ -1,11 +1,15 @@
 # Bernoulli On-Policy Distillation
 
-Official research code for **“Bernoulli On-Policy Distillation: Don’t Ignore High-Confidence Student Tokens.”**
+Official research code for **“Bernoulli On-Policy Distillation: Don’t Ignore High-Confidence Student Tokens.”** [![arXiv](https://img.shields.io/badge/arXiv-2611.02093-B31B1B.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2611.02093) [![Code](https://img.shields.io/badge/Code-GitHub-2685D8.svg?logo=github&logoColor=white)](https://github.com/duterscmy/Bernoulli-OPD)
 
+[Mingyu Cao](https://duterscmy.github.io/)<sup>1</sup>,
+Yaokai Jin<sup>2</sup>,
+[Shiwei Liu](https://shiweiliuiiiiiii.github.io/)<sup>3,4,5</sup>,
+[Lu Yin](https://luuyin.com/)<sup>1,*</sup>
 
-[Mingyu Cao](https://duterscmy.github.io/)<sup>1</sup>, Yaokai Jin<sup>2</sup>, [Shiwei Liu](https://shiweiliuiiiiiii.github.io/)<sup>3,4,5</sup>, [Lu Yin](https://luuyin.com/)<sup>1,*</sup>  
-<sup>1</sup>University of Surrey · <sup>2</sup>University College London · <sup>3</sup>ELLIS Institute Tübingen · <sup>4</sup>Max Planck Institute for Intelligent Systems · <sup>5</sup>Tübingen AI Center  
-<sup>*</sup>Corresponding author: [Lu Yin](mailto:l.yin@surrey.ac.uk)
+<sup>1</sup> University of Surrey  <sup>2</sup> University College London  <sup>3</sup> ELLIS Institute Tübingen  <sup>4</sup> Max Planck Institute for Intelligent Systems  <sup>5</sup> Tübingen AI Center  
+
+<sup>*</sup> Corresponding author: [Lu Yin](mailto:l.yin@surrey.ac.uk)
 
 
 ![Figure 1: token distribution and gradient allocation](assets/figure1.png)
@@ -166,10 +170,13 @@ to the authors' paper copyright.
 ## Citation
 
 ```bibtex
-@article{cao2026bernoulli,
-  title   = {Bernoulli On-Policy Distillation: Don't Ignore High-Confidence Student Tokens},
-  author  = {Cao, Mingyu and Jin, Yaokai and Liu, Shiwei and Yin, Lu},
-  year    = {2026},
-  note    = {Preprint}
+@misc{cao2026bernoullionpolicydistillationdont,
+      title={Bernoulli On-Policy Distillation: Don't Ignore High-Confidence Student Tokens}, 
+      author={Mingyu Cao and Yaokai Jin and Shiwei Liu and Lu Yin},
+      year={2026},
+      eprint={2611.02093},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2611.02093}, 
 }
 ```
