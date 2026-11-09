@@ -1,19 +1,8 @@
 <div align="center">
 
-<h1>Bernoulli On-Policy Distillation</h1>
-
-<p>
-Official research code for <strong>“Bernoulli On-Policy Distillation: Don’t Ignore High-Confidence Student Tokens.”</strong>
-</p>
-
-<p>
-<a href="https://arxiv.org/abs/2611.02093">
-<img src="https://img.shields.io/badge/arXiv-2611.02093-B31B1B.svg?logo=arxiv&logoColor=white" />
-</a>
-<a href="https://github.com/duterscmy/Bernoulli-OPD">
+<h1>Bernoulli On-Policy Distillation<a href="https://github.com/duterscmy/Bernoulli-OPD">
 <img src="https://img.shields.io/badge/Code-GitHub-2685D8.svg?logo=github&logoColor=white" />
-</a>
-</p>
+</a></h1>
 
 <p>
 <a href="https://duterscmy.github.io/">Mingyu Cao</a><sup>1</sup>,
