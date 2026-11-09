@@ -1,15 +1,40 @@
-# Bernoulli On-Policy Distillation
+<div align="center">
 
-Official research code for **“Bernoulli On-Policy Distillation: Don’t Ignore High-Confidence Student Tokens.”** [![arXiv](https://img.shields.io/badge/arXiv-2611.02093-B31B1B.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2611.02093) [![Code](https://img.shields.io/badge/Code-GitHub-2685D8.svg?logo=github&logoColor=white)](https://github.com/duterscmy/Bernoulli-OPD)
+<h1>Bernoulli On-Policy Distillation</h1>
 
-[Mingyu Cao](https://duterscmy.github.io/)<sup>1</sup>,
+<p>
+Official research code for <strong>“Bernoulli On-Policy Distillation: Don’t Ignore High-Confidence Student Tokens.”</strong>
+</p>
+
+<p>
+<a href="https://arxiv.org/abs/2611.02093">
+<img src="https://img.shields.io/badge/arXiv-2611.02093-B31B1B.svg?logo=arxiv&logoColor=white" />
+</a>
+<a href="https://github.com/duterscmy/Bernoulli-OPD">
+<img src="https://img.shields.io/badge/Code-GitHub-2685D8.svg?logo=github&logoColor=white" />
+</a>
+</p>
+
+<p>
+<a href="https://duterscmy.github.io/">Mingyu Cao</a><sup>1</sup>,
 Yaokai Jin<sup>2</sup>,
-[Shiwei Liu](https://shiweiliuiiiiiii.github.io/)<sup>3,4,5</sup>,
-[Lu Yin](https://luuyin.com/)<sup>1,*</sup>
+<a href="https://shiweiliuiiiiiii.github.io/">Shiwei Liu</a><sup>3,4,5</sup>,
+<a href="https://luuyin.com/">Lu Yin</a><sup>1,*</sup>
+</p>
 
-<sup>1</sup> University of Surrey  <sup>2</sup> University College London  <sup>3</sup> ELLIS Institute Tübingen  <sup>4</sup> Max Planck Institute for Intelligent Systems  <sup>5</sup> Tübingen AI Center  
+<p>
+<sup>1</sup> University of Surrey ·
+<sup>2</sup> University College London ·
+<sup>3</sup> ELLIS Institute Tübingen ·
+<sup>4</sup> Max Planck Institute for Intelligent Systems ·
+<sup>5</sup> Tübingen AI Center
+</p>
 
-<sup>*</sup> Corresponding author: [Lu Yin](mailto:l.yin@surrey.ac.uk)
+<p>
+<sup>*</sup> Corresponding author: <a href="mailto:l.yin@surrey.ac.uk">Lu Yin</a>
+</p>
+
+</div>
 
 
 ![Figure 1: token distribution and gradient allocation](assets/figure1.png)
