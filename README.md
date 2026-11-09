@@ -29,9 +29,10 @@ Yaokai Jin<sup>2</sup>,
 [![version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/duterscmy/Bernoulli-OPD)
 
 This repository is the reference implementation for
-[arXiv:2611.02093](https://arxiv.org/abs/2611.02093). It is intentionally maintained as a full
-Slime source fork plus a paper-reproduction layer; the upstream baseline, project-specific
-surface, and synchronization policy are documented in [PROVENANCE.md](PROVENANCE.md).
+[arXiv:2611.02093](https://arxiv.org/abs/2611.02093). It is maintained as a Slime source fork with
+a focused paper-reproduction layer: generic upstream launchers are pruned while the framework
+source remains available. The upstream baseline, project-specific surface, and synchronization
+policy are documented in [PROVENANCE.md](PROVENANCE.md).
 
 
 ![Figure 1: token distribution and gradient allocation](assets/figure1.png)

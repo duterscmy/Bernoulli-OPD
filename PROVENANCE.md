@@ -2,10 +2,10 @@
 
 ## Repository model
 
-Bernoulli OPD is intentionally maintained as a **full source fork of Slime plus a paper
-reproduction layer**. It is not a minimal patch set. Keeping the inherited source in one repository
-makes the exact training stack inspectable and avoids requiring users to reconstruct a moving
-upstream checkout before applying the objective changes.
+Bernoulli OPD is maintained as a **Slime source fork plus a focused paper-reproduction layer**.
+The core framework source is retained so that the exact training stack remains inspectable, while
+generic upstream launchers and model presets unrelated to the paper are intentionally pruned from
+`scripts/`.
 
 The trade-off is explicit: this repository does not claim to be the canonical home for general
 Slime development. Project maintainers will selectively synchronize security, correctness, and
@@ -42,9 +42,10 @@ The main project-specific implementation and reproduction surface includes:
 - release metadata, pinned model/data inputs, and reproduction documentation.
 
 The paper implementation includes Vanilla OPD, SuRe, PowerOPD, GC-OPD, Bernoulli OPD, and
-Balanced Bernoulli. The top-level entry points are maintained for the paper; the many other
-examples and tests are inherited Slime functionality and may require environments not covered by
-the paper release.
+Balanced Bernoulli. The top-level `scripts/` entry points, two student-model presets,
+`examples/opsa/`, and focused OPD/OPSA tests are maintained for the paper. Generic upstream
+launchers, examples, documentation, conversion utilities, and hardware/model-specific tests are
+excluded from the public release; they remain available from the upstream Slime project.
 
 ## Patched runtime dependencies
 

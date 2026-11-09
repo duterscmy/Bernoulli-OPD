@@ -26,7 +26,7 @@ export CUDA_HOME="$CONDA_PREFIX"
 # Keep these in sync with docker/Dockerfile:
 #   - SGLANG_IMAGE_TAG (ARG)            -> SGLANG_VERSION below
 #   - MEGATRON_COMMIT (ARG)             -> MEGATRON_COMMIT below
-#   - PATCH_VERSION (ARG, default "latest") -> PATCH_VERSION below
+#   - PATCH_VERSION (ARG)                   -> PATCH_VERSION below
 #   - TMS_COMMIT (ARG)                   -> TMS_COMMIT below
 #   - FLASH_QLA_COMMIT (ARG)             -> FLASH_QLA_COMMIT below
 export SGLANG_VERSION="v0.5.15.post1"
